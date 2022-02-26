@@ -30,5 +30,6 @@ public interface Step {
     static void initInnerStep() {
         Step.registerStep("html-format", HtmlFormatStep.class);
         Step.registerStep("markdown", MarkdownStep.class);
+        Step.registerStep("catalogue", HtmlCatalogueStep.class);
     }
 }

@@ -1,5 +1,6 @@
 package cn.powernukkitx.powerdoc.render;
 
+import cn.powernukkitx.powerdoc.config.Exposed;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 
@@ -10,6 +11,11 @@ public class MarkdownStep implements Step {
     static {
         markdownParser = Parser.builder().build();
         htmlRenderer = HtmlRenderer.builder().build();
+    }
+
+    @Exposed
+    public MarkdownStep() {
+
     }
 
     @Override

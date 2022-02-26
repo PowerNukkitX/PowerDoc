@@ -5,7 +5,6 @@ import cn.powernukkitx.powerdoc.config.BookConfig;
 import cn.powernukkitx.powerdoc.config.NullableArg;
 import cn.powernukkitx.powerdoc.render.Document;
 import cn.powernukkitx.powerdoc.render.Step;
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
@@ -23,7 +22,6 @@ import java.util.regex.Pattern;
 import static cn.powernukkitx.powerdoc.utils.JsonUtils.toBasic;
 
 public final class Book {
-    private static final Gson gson = new Gson();
     private final BookConfig config;
 
     private final String outputPath;
