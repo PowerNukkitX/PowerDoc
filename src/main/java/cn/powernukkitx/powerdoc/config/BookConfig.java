@@ -8,7 +8,8 @@ import java.util.Map;
 
 import static cn.powernukkitx.powerdoc.utils.JsonUtils.toMap;
 
-public record BookConfig(String title, String[] author, CommonConfig.FileCollection pages, BookWorkflow workflow) {
+public record BookConfig(String title, String[] author, CommonConfig.FileCollection pages, BookProcessFlow processFlow,
+                         BookWorkflow workflow) {
 
     public static BookConfig from(JsonObject jsonObject) {
         String[] author;
@@ -23,7 +24,27 @@ public record BookConfig(String title, String[] author, CommonConfig.FileCollect
         }
         return new BookConfig(jsonObject.get("title").getAsString(), author,
                 CommonConfig.FileCollection.from(jsonObject.get("pages").getAsJsonObject()),
+                BookProcessFlow.from(jsonObject.get("processflow").getAsJsonObject()),
                 BookWorkflow.from(jsonObject.get("workflow").getAsJsonObject()));
+    }
+
+    public record BookProcessFlow(BookProcessor[] processors) {
+        public static BookProcessFlow from(JsonObject jsonObject) {
+            var arr = jsonObject.get("processors").getAsJsonArray();
+            var processors = new BookProcessor[arr.size()];
+            for (int i = 0, length = arr.size(); i < length; i++) {
+                processors[i] = BookProcessor.from(arr.get(i).getAsJsonObject());
+            }
+            return new BookProcessFlow(processors);
+        }
+    }
+
+    public record BookProcessor(String id, String use, Map<String, Object> args) {
+        public static BookProcessor from(JsonObject jsonObject) {
+            var obj = jsonObject.get("args");
+            return new BookProcessor(jsonObject.get("id").getAsString(), jsonObject.get("use").getAsString(),
+                    obj == null ? new HashMap<>(0) : toMap(obj.getAsJsonObject()));
+        }
     }
 
     public record BookWorkflow(String outputPath, BookWorkflowStep[] steps) {

@@ -8,6 +8,20 @@
     "recursion": true,
     "filter": ".*"
   },
+  "processflow": {
+    "processors": [
+      {
+        "id": "copy-resources",
+        "use": "copy-file",
+        "args": {
+          "copies": {
+            "./image": "./html/image",
+            "./css": "./html/css"
+          }
+        }
+      }
+    ]
+  },
   "workflow": {
     "outputPath": "./html",
     "steps": [
@@ -26,7 +40,8 @@
           "templatePath": "./template/zh-cn.html",
           "placeholders": {
             "md": "markdown.rendered",
-            "catalogue": "html.catalogue"
+            "catalogue": "html.catalogue",
+            "title": "file.noExtName"
           }
         }
       }

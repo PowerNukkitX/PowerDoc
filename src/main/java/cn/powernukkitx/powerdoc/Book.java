@@ -3,8 +3,10 @@ package cn.powernukkitx.powerdoc;
 import cn.powernukkitx.powerdoc.config.Arg;
 import cn.powernukkitx.powerdoc.config.BookConfig;
 import cn.powernukkitx.powerdoc.config.NullableArg;
+import cn.powernukkitx.powerdoc.processor.Processor;
 import cn.powernukkitx.powerdoc.render.Document;
 import cn.powernukkitx.powerdoc.render.Step;
+import cn.powernukkitx.powerdoc.utils.StringUtils;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
@@ -13,8 +15,11 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -39,6 +44,20 @@ public final class Book {
     }
 
     public void build() {
+        processFlow();
+        workflow();
+    }
+
+    public void processFlow() {
+        for (final var processorConfig : config.processFlow().processors()) {
+            var processor = constructStep(Processor::getProcessorClass, processorConfig.use(), processorConfig.args());
+            if (processor != null) {
+                processor.work(this);
+            }
+        }
+    }
+
+    public void workflow() {
         buildForDir(outputPath + "/", new File(config.pages().path()), true);
     }
 
@@ -59,8 +78,14 @@ public final class Book {
                     Logger.getLogger("cn.powernukkitx.powerdoc").log(Level.WARNING, "Cannot read " + doc.getSource() + " because: " + e.getMessage());
                     continue;
                 }
+                // 设置基本变量
+                {
+                    doc.setVariable("file.name", each.getName());
+                    doc.setVariable("file.noExtName", StringUtils.beforeLast(each.getName(), "."));
+                    doc.setVariable("time.lastModified", LocalDateTime.ofEpochSecond(each.lastModified(), 0, ZoneOffset.UTC));
+                }
                 for (final var stepConfig : config.workflow().steps()) {
-                    var step = constructStep(stepConfig.use(), stepConfig.args());
+                    var step = constructStep(Step::getStepClass, stepConfig.use(), stepConfig.args());
                     if (step != null) {
                         step.work(doc);
                     }
@@ -82,8 +107,8 @@ public final class Book {
         }
     }
 
-    private Step constructStep(String stepId, Map<String, Object> args) {
-        var clazz = Step.getStepClass(stepId);
+    private <T> T constructStep(Function<String, Class<T>> provider, String stepId, Map<String, Object> args) {
+        var clazz = provider.apply(stepId);
         if (clazz == null) {
             Logger.getLogger("cn.powernukkitx.powerdoc").log(Level.WARNING, "Step " + stepId + " not found.");
             return null;
@@ -119,7 +144,7 @@ public final class Book {
             }
             if (usedArgs == args.size()) {
                 try {
-                    return (Step) constructor.newInstance(constructorArguments.toArray());
+                    return clazz.cast(constructor.newInstance(constructorArguments.toArray()));
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException ignore) {
 
                 }

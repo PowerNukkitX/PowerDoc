@@ -1,12 +1,18 @@
 package cn.powernukkitx.powerdoc;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 
 public class Main {
     public static void main(String[] args) {
         try {
-            new Book(Path.of(args[0])).build();
+            var file = new File(args[0]);
+            var dir = file.getParentFile();
+            if(dir == null) {
+                dir = new File("./");
+            }
+            System.setProperty("user.dir", dir.getAbsolutePath());
+            new Book(file.toPath()).build();
         } catch (IOException e) {
             e.printStackTrace();
         }
