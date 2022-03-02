@@ -28,6 +28,7 @@ import static cn.powernukkitx.powerdoc.utils.JsonUtils.toBasic;
 
 public final class Book {
     private final BookConfig config;
+    private final File bookDir;
 
     private final String outputPath;
     private final Pattern pageFileFilterPattern;
@@ -37,6 +38,7 @@ public final class Book {
         config = BookConfig.from(JsonParser.parseString(content).getAsJsonObject());
         outputPath = config.workflow().outputPath();
         pageFileFilterPattern = Pattern.compile(config.pages().filter());
+        bookDir = new File(config.pages().path());
     }
 
     public BookConfig getConfig() {
@@ -58,7 +60,7 @@ public final class Book {
     }
 
     public void workflow() {
-        buildForDir(outputPath + "/", new File(config.pages().path()), true);
+        buildForDir(outputPath + "/", bookDir, true);
     }
 
     private void buildForDir(String prefix, File dir, boolean top) {
@@ -83,6 +85,7 @@ public final class Book {
                     doc.setVariable("file.name", each.getName());
                     doc.setVariable("file.noExtName", StringUtils.beforeLast(each.getName(), "."));
                     doc.setVariable("time.lastModified", LocalDateTime.ofEpochSecond(each.lastModified(), 0, ZoneOffset.UTC));
+                    doc.setVariable("file.rootRelativePrefix", "../".repeat(bookDir.toPath().relativize(each.toPath()).getNameCount() - 1));
                 }
                 for (final var stepConfig : config.workflow().steps()) {
                     var step = constructStep(Step::getStepClass, stepConfig.use(), stepConfig.args());

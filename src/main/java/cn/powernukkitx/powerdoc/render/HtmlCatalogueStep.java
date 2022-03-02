@@ -7,6 +7,7 @@ import cn.powernukkitx.powerdoc.config.Exposed;
 import cn.powernukkitx.powerdoc.config.NullableArg;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -59,14 +60,15 @@ public class HtmlCatalogueStep implements Step {
             var html = """
                     <nav id="%s" class="%s"><div class="%s">%s</div></nav>""";
             final var pattern = Pattern.compile(book.getConfig().pages().filter());
+            final var bookFile = new File(book.getConfig().pages().path());
             html = html.formatted(navId, navCssClass, listDivCssClass, makeCatalogue(book.getConfig(),
-                    pattern, new File(book.getConfig().pages().path()), 0));
+                    pattern, bookFile, document.getSource()));
             document.setVariable("html.catalogue", html);
             cache.put(book, html);
         }
     }
 
-    private String makeCatalogue(BookConfig config, Pattern pageFileFilterPattern, File dir, int depth) {
+    private String makeCatalogue(BookConfig config, Pattern pageFileFilterPattern, File dir, Path currentPath) {
         var out = new StringBuilder();
         if (!dir.exists() || !dir.isDirectory()) {
             return "";
@@ -78,12 +80,13 @@ public class HtmlCatalogueStep implements Step {
         for (final var each : pageFiles) {
             if (each.isFile()) {
                 out.append("""
-                        <li class="%s"><a class="%s" href="%s%s">%s</a></li>
-                        """.formatted(liCssClass, aCssClass, "../".repeat(depth),
-                        beforeLast(each.getName(), ".") + ".html", beforeLast(each.getName(), ".")));
+                        <li class="%s"><a class="%s" href="%s">%s</a></li>
+                        """.formatted(liCssClass, aCssClass,
+                        beforeLast(currentPath.relativize(each.toPath()).toString(), ".") + ".html",
+                        beforeLast(each.getName(), ".")));
             } else if (each.isDirectory()) {
                 if (config.pages().recursion()) {
-                    out.append(makeCatalogue(config, pageFileFilterPattern, dir, ++depth));
+                    out.append(makeCatalogue(config, pageFileFilterPattern, each, currentPath));
                 }
             }
         }

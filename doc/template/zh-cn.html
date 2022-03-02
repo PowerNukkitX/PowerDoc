@@ -10,7 +10,8 @@
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/mdui@1.0.1/dist/css/mdui.min.css"
           crossorigin="anonymous"/>
-    <link rel="stylesheet" href="../html/css/common.css"/>
+    <!--suppress HtmlUnknownTarget -->
+    <link rel="stylesheet" href="%relativePrefix%css/common.css"/>
 </head>
 <body class="mdui-theme-primary-indigo mdui-drawer-body-left mdui-appbar-with-toolbar">
 <header class="appbar mdui-appbar mdui-appbar-fixed">
@@ -19,10 +20,12 @@
             <a href="javascript:" class="mdui-btn mdui-btn-icon" mdui-drawer="{target: '#catalogue-drawer'}">
                 <i class="mdui-icon material-icons">menu</i>
             </a>
-            <a href="javascript:" class="mdui-typo-headline">
-                <img src="../html/image/PNX_LOGO_sm.png" class="icon-image" alt="logo">
+            <a href="https://www.powernukkitx.cn" class="mdui-typo-headline icon-title">
+                <span class="icon-title-main">PN</span>
+                <span class="icon-title-space"></span>
+                <span class="icon-title-sup">X</span>
             </a>
-            <a href="javascript:" class="mdui-typo-title">%title%</a>
+            <span   class="mdui-typo-title">%title%</span>
             <div class="mdui-toolbar-spacer"></div>
             <a href="javascript:" class="mdui-btn mdui-btn-icon">
                 <i class="mdui-icon material-icons">search</i>
@@ -33,11 +36,15 @@
         </div>
     </div>
 </header>
-<div id="catalogue-drawer" class="mdui-drawer">
-    %catalogue%
+<div class="mdui-typo">
+    <div id="catalogue-drawer" class="mdui-drawer">
+        <div class="category-v-space"></div>
+        %catalogue%
+    </div>
+    <div class="mdui-container">
+        %md%
+    </div>
 </div>
-<!-- -->
-<!-- -->%md%
 <script src="https://cdn.jsdelivr.net/npm/mdui@1.0.1/dist/js/mdui.min.js" crossorigin="anonymous"></script>
 </body>
 </html>

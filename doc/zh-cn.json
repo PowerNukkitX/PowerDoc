@@ -16,7 +16,7 @@
         "args": {
           "copies": {
             "./image": "./html/image",
-            "./css": "./html/css"
+            "./template/css": "./html/css"
           }
         }
       }
@@ -27,11 +27,22 @@
     "steps": [
       {
         "id": "render-markdown",
-        "use": "markdown"
+        "use": "markdown",
+        "args": {
+          "cssClass": {
+            "h1": "mdui-text-color-theme"
+          }
+        }
       },
       {
         "id": "generate-catalogue",
-        "use": "catalogue"
+        "use": "catalogue",
+        "args": {
+          "cssClass": {
+            "p": "category-title mdui-text-color-theme",
+            "ol": "category-sub"
+          }
+        }
       },
       {
         "id": "generate-html",
@@ -41,7 +52,8 @@
           "placeholders": {
             "md": "markdown.rendered",
             "catalogue": "html.catalogue",
-            "title": "file.noExtName"
+            "title": "file.noExtName",
+            "relativePrefix": "file.rootRelativePrefix"
           }
         }
       }

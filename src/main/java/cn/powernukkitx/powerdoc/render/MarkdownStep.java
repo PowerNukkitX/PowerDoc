@@ -1,21 +1,31 @@
 package cn.powernukkitx.powerdoc.render;
 
+import cn.powernukkitx.powerdoc.config.Arg;
 import cn.powernukkitx.powerdoc.config.Exposed;
+import cn.powernukkitx.powerdoc.config.NullableArg;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 
+import java.util.Map;
+
 public class MarkdownStep implements Step {
     public static final Parser markdownParser;
-    public static final HtmlRenderer htmlRenderer;
+    public final HtmlRenderer htmlRenderer;
 
     static {
         markdownParser = Parser.builder().build();
-        htmlRenderer = HtmlRenderer.builder().build();
     }
 
     @Exposed
-    public MarkdownStep() {
-
+    public MarkdownStep(final @Arg("cssClass") @NullableArg Map<String, String> cssClass) {
+        if (cssClass == null) {
+            this.htmlRenderer = HtmlRenderer.builder().build();
+        } else {
+            this.htmlRenderer = HtmlRenderer.builder().attributeProviderFactory(context -> (node, tagName, attributes) -> {
+                if (cssClass.containsKey(tagName))
+                    attributes.put("class", cssClass.get(tagName));
+            }).build();
+        }
     }
 
     @Override
