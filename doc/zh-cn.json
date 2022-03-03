@@ -40,7 +40,8 @@
         "args": {
           "cssClass": {
             "p": "category-title mdui-text-color-theme",
-            "ol": "category-sub"
+            "ol": "category-sub",
+            "strong": "mdui-text-color-theme-accent"
           }
         }
       },
