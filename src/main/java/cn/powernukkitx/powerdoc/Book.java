@@ -6,6 +6,8 @@ import cn.powernukkitx.powerdoc.config.NullableArg;
 import cn.powernukkitx.powerdoc.processor.Processor;
 import cn.powernukkitx.powerdoc.render.Document;
 import cn.powernukkitx.powerdoc.render.Step;
+import cn.powernukkitx.powerdoc.utils.FileUtils;
+import cn.powernukkitx.powerdoc.utils.PathUtils;
 import cn.powernukkitx.powerdoc.utils.StringUtils;
 import cn.powernukkitx.powerdoc.utils.Timing;
 import com.google.gson.JsonElement;
@@ -44,7 +46,7 @@ public final class Book {
         config = BookConfig.from(JsonParser.parseString(content).getAsJsonObject());
         outputPath = config.workflow().outputPath();
         pageFileFilterPattern = Pattern.compile(config.pages().filter());
-        bookDir = new File(config.pages().path());
+        bookDir = FileUtils.of(config.pages().path());
     }
 
     public BookConfig getConfig() {
@@ -107,13 +109,13 @@ public final class Book {
                 var name = each.getName();
                 name = name.substring(0, name.lastIndexOf(".")) + "." + doc.getVariable("ext", String.class, "txt");
                 try {
-                    var file = new File(prefix + (top ? "" : ("/" + dir.getName())) + "/" + name);
+                    var file = FileUtils.of(prefix + (top ? "" : ("/" + dir.getName())) + "/" + name);
                     //noinspection ResultOfMethodCallIgnored
                     file.getParentFile().mkdirs();
                     Files.writeString(file.toPath(), doc.getText());
                     timing.log(Logger.getLogger("cn.powernukkitx.powerdoc"), file.getName());
                 } catch (IOException e) {
-                    Logger.getLogger("cn.powernukkitx.powerdoc").log(Level.FINE, "Cannot generate " + Path.of(prefix, dir.getName(), name) + " because: " + e.getMessage());
+                    Logger.getLogger("cn.powernukkitx.powerdoc").log(Level.FINE, "Cannot generate " + Path.of(prefix, dir.getName(), name) + " because: " + e.getLocalizedMessage());
                 }
             } else if (each.isDirectory()) {
                 if (config.pages().recursion())

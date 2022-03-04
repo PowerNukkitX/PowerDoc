@@ -4,6 +4,7 @@ import cn.powernukkitx.powerdoc.config.Arg;
 import cn.powernukkitx.powerdoc.config.BookConfig;
 import cn.powernukkitx.powerdoc.config.Exposed;
 import cn.powernukkitx.powerdoc.config.NullableArg;
+import cn.powernukkitx.powerdoc.utils.FileUtils;
 
 import java.io.File;
 import java.util.HashMap;
@@ -54,7 +55,7 @@ public class HtmlCatalogueStep implements Step {
         var html = """
                 <nav id="%s" class="%s"><div class="%s">%s</div></nav>""";
         final var pattern = Pattern.compile(book.getConfig().pages().filter());
-        final var bookDir = new File(book.getConfig().pages().path());
+        final var bookDir = FileUtils.of(book.getConfig().pages().path());
         html = html.formatted(navId, navCssClass, listDivCssClass, makeCatalogue(book.getConfig(),
                 pattern, bookDir, document.getSource().toFile(), 0));
         document.setVariable("html.catalogue", html);

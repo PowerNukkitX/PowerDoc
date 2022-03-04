@@ -3,8 +3,8 @@ package cn.powernukkitx.powerdoc.render;
 import cn.powernukkitx.powerdoc.config.Arg;
 import cn.powernukkitx.powerdoc.config.Exposed;
 import cn.powernukkitx.powerdoc.config.NullableArg;
+import cn.powernukkitx.powerdoc.utils.FileUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Map;
@@ -39,7 +39,7 @@ public class HtmlFormatStep implements Step {
     public void work(Document document) {
         if (template == null && templatePath != null) {
             try {
-                template = Files.readString(new File(templatePath).toPath());
+                template = Files.readString(FileUtils.of(templatePath).toPath());
             } catch (IOException e) {
                 Logger.getLogger("cn.powernukkitx.powerdoc").log(Level.WARNING, "Cannot read " + templatePath + "because: " + e.getMessage());
             }

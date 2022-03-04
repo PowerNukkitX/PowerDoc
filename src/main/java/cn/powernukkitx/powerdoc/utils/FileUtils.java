@@ -1,5 +1,6 @@
 package cn.powernukkitx.powerdoc.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
@@ -15,6 +16,7 @@ public final class FileUtils {
                     .map(pair -> pair.setB(destination.resolve(pair.getB())))
                     .forEach(pair -> {
                         try {
+                            Files.createDirectories(pair.getB());
                             Files.copy(pair.getA(), pair.getB(), StandardCopyOption.REPLACE_EXISTING);
                         } catch (DirectoryNotEmptyException ignore) {
 
@@ -25,5 +27,9 @@ public final class FileUtils {
         } catch (IOException e) {
             IOEHandler.accept(e);
         }
+    }
+
+    public static File of(String path) {
+        return new File(PathUtils.workingPath.toFile(), path);
     }
 }

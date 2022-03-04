@@ -1,5 +1,6 @@
 package cn.powernukkitx.powerdoc;
 
+import cn.powernukkitx.powerdoc.utils.PathUtils;
 import cn.powernukkitx.powerdoc.utils.Timing;
 
 import java.io.File;
@@ -17,8 +18,8 @@ public class Main {
             if (dir == null) {
                 dir = new File("./");
             }
+            PathUtils.workingPath = dir.toPath();
             logger.setLevel(Level.INFO);
-            System.setProperty("user.dir", dir.getAbsolutePath());
             new Book(file.toPath()).build();
             logger.log(Level.INFO, "Build finished in " + timing.ends() + "ms.");
         } catch (IOException e) {
