@@ -30,7 +30,8 @@
         "use": "markdown",
         "args": {
           "cssClass": {
-            "h1": "mdui-text-color-theme"
+            "h1": "mdui-text-color-theme",
+            "table": "mdui-table mdui-table-hoverable"
           }
         }
       },

@@ -37,3 +37,8 @@ ol.category-sub {
 .category-v-space {
     height: 20px;
 }
+
+.copyright {
+    width: fit-content;
+    font-size: 8px;
+}

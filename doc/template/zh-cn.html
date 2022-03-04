@@ -10,10 +10,14 @@
     <link rel="stylesheet"
           href="https://cdn.bootcdn.net/ajax/libs/mdui/1.0.2/css/mdui.min.css"
           crossorigin="anonymous"/>
+    <!--  Prism.js代码高亮  -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/prism/1.27.0/themes/prism.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/prism/1.27.0/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/prism-themes/1.9.0/prism-one-light.min.css" rel="stylesheet">
     <!--suppress HtmlUnknownTarget -->
     <link rel="stylesheet" href="%relativePrefix%css/common.css"/>
 </head>
-<body class="mdui-theme-primary-indigo mdui-theme-accent-light-blue mdui-drawer-body-left mdui-appbar-with-toolbar">
+<body class="mdui-theme-primary-indigo mdui-theme-accent-indigo mdui-drawer-body-left mdui-appbar-with-toolbar">
 <header class="appbar mdui-appbar mdui-appbar-fixed">
     <div class="mdui-appbar">
         <div class="mdui-toolbar mdui-color-theme">
@@ -22,7 +26,6 @@
             </a>
             <a href="https://www.powernukkitx.cn" class="mdui-typo-headline icon-title">
                 <span class="icon-title-main">PN</span>
-                <span class="icon-title-space"></span>
                 <span class="icon-title-sup">X</span>
             </a>
             <span   class="mdui-typo-title">%title%</span>
@@ -41,10 +44,20 @@
         <div class="category-v-space"></div>
         %catalogue%
     </div>
-    <div class="mdui-container">
+    <div class="mdui-container line-numbers">
         %md%
+        <hr/>
+        <span class="mdui-typo-subheading-opacity mdui-center copyright">© PowerNukkitX 开发组</span>
+        <span class="copyright">&ensp;</span>
     </div>
 </div>
+<!-- MDUI Material设计库 -->
 <script src="https://cdn.bootcdn.net/ajax/libs/mdui/1.0.2/js/mdui.min.js" crossorigin="anonymous"></script>
+<!-- Prism.js 代码高亮库 -->
+<script src="https://cdn.bootcdn.net/ajax/libs/prism/1.27.0/prism.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/prism/1.27.0/components/prism-json.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/prism/1.27.0/components/prism-javascript.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/prism/1.27.0/components/prism-java.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/prism/1.27.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
 </body>
 </html>
