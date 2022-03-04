@@ -7,18 +7,22 @@ import cn.powernukkitx.powerdoc.processor.Processor;
 import cn.powernukkitx.powerdoc.render.Document;
 import cn.powernukkitx.powerdoc.render.Step;
 import cn.powernukkitx.powerdoc.utils.StringUtils;
+import cn.powernukkitx.powerdoc.utils.Timing;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,6 +36,8 @@ public final class Book {
 
     private final String outputPath;
     private final Pattern pageFileFilterPattern;
+
+    private static final WeakHashMap<String, Constructor<?>> constructorCache = new WeakHashMap<>();
 
     public Book(Path bookConfigPath) throws IOException {
         var content = Files.readString(bookConfigPath);
@@ -52,7 +58,7 @@ public final class Book {
 
     public void processFlow() {
         for (final var processorConfig : config.processFlow().processors()) {
-            var processor = constructStep(Processor::getProcessorClass, processorConfig.use(), processorConfig.args());
+            var processor = constructObject(Processor::getProcessorClass, processorConfig.use(), processorConfig.args());
             if (processor != null) {
                 processor.work(this);
             }
@@ -71,14 +77,19 @@ public final class Book {
         if (pageFiles == null || pageFiles.length == 0) {
             return;
         }
-        for (final var each : pageFiles) {
+        var stream = Arrays.stream(pageFiles);
+        if(pageFiles.length >= 4) {
+            stream = stream.parallel();
+        }
+        stream.forEach(each -> {
             if (each.isFile()) {
+                final var timing = new Timing();
                 final var doc = new Document(each.toPath(), this);
                 try {
                     doc.setText(Files.readString(doc.getSource()));
                 } catch (IOException e) {
                     Logger.getLogger("cn.powernukkitx.powerdoc").log(Level.WARNING, "Cannot read " + doc.getSource() + " because: " + e.getMessage());
-                    continue;
+                    return;
                 }
                 // 设置基本变量
                 {
@@ -88,7 +99,7 @@ public final class Book {
                     doc.setVariable("file.rootRelativePrefix", "../".repeat(bookDir.toPath().relativize(each.toPath()).getNameCount() - 1));
                 }
                 for (final var stepConfig : config.workflow().steps()) {
-                    var step = constructStep(Step::getStepClass, stepConfig.use(), stepConfig.args());
+                    var step = constructObject(Step::getStepClass, stepConfig.use(), stepConfig.args());
                     if (step != null) {
                         step.work(doc);
                     }
@@ -100,24 +111,37 @@ public final class Book {
                     //noinspection ResultOfMethodCallIgnored
                     file.getParentFile().mkdirs();
                     Files.writeString(file.toPath(), doc.getText());
+                    timing.log(Logger.getLogger("cn.powernukkitx.powerdoc"), file.getName());
                 } catch (IOException e) {
-                    Logger.getLogger("cn.powernukkitx.powerdoc").log(Level.WARNING, "Cannot generate " + Path.of(prefix, dir.getName(), name) + " because: " + e.getMessage());
+                    Logger.getLogger("cn.powernukkitx.powerdoc").log(Level.FINE, "Cannot generate " + Path.of(prefix, dir.getName(), name) + " because: " + e.getMessage());
                 }
             } else if (each.isDirectory()) {
                 if (config.pages().recursion())
                     buildForDir(top ? (prefix) : (prefix + "/" + dir.getName()), each, false);
             }
-        }
+        });
     }
 
-    private <T> T constructStep(Function<String, Class<T>> provider, String stepId, Map<String, Object> args) {
-        var clazz = provider.apply(stepId);
+    private <T> T constructObject(Function<String, Class<T>> provider, String id, Map<String, Object> args) {
+        final var uniqueConstructorIdBuilder = new StringBuilder(id);
+        args.keySet().forEach(s -> uniqueConstructorIdBuilder.append("&").append(s));
+        final var uniqueConstructorId = uniqueConstructorIdBuilder.toString();
+
+        Constructor<?>[] candidateConstructors;
+
+        var clazz = provider.apply(id);
         if (clazz == null) {
-            Logger.getLogger("cn.powernukkitx.powerdoc").log(Level.WARNING, "Step " + stepId + " not found.");
+            Logger.getLogger("cn.powernukkitx.powerdoc").log(Level.WARNING, "Step " + id + " not found.");
             return null;
         }
+        if(constructorCache.containsKey(uniqueConstructorId)) {
+            candidateConstructors = new Constructor[]{constructorCache.get(uniqueConstructorId)};
+        } else {
+            candidateConstructors = clazz.getConstructors();
+        }
+
         outer:
-        for (final var constructor : clazz.getConstructors()) {
+        for (final var constructor : candidateConstructors) {
             var usedArgs = 0;
             var constructorArguments = new ArrayList<>(constructor.getParameterCount());
             for (final var parameter : constructor.getParameters()) {
@@ -147,13 +171,14 @@ public final class Book {
             }
             if (usedArgs == args.size()) {
                 try {
+                    constructorCache.put(uniqueConstructorId, constructor);
                     return clazz.cast(constructor.newInstance(constructorArguments.toArray()));
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException ignore) {
 
                 }
             }
         }
-        Logger.getLogger("cn.powernukkitx.powerdoc").log(Level.WARNING, "Cannot build " + stepId + " with " + args + " .");
+        Logger.getLogger("cn.powernukkitx.powerdoc").log(Level.WARNING, "Cannot build " + id + " with " + args + " .");
         return null;
     }
 }
