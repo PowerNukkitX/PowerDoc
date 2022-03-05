@@ -26,9 +26,10 @@ jobs:
       run: mvn -B package --file pom.xml
     - name: Get Time
       id: time
-      uses: JantHsueh/get-time-action@master
+      uses: nanzm/get-time-action@v1.1
       with:
         timeZone: 8
+        format: 'YYYY_MM_DD_HH_mm_ss'
     - name: Release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/heads/master')
