@@ -32,4 +32,23 @@ public final class FileUtils {
     public static File of(String path) {
         return new File(PathUtils.workingPath.toFile(), path);
     }
+
+    /**
+     * target相对于source的路径
+     *
+     * @param source File
+     * @param target File
+     * @return target相对于source的路径
+     */
+    public static String relativeWebPath(File source, File target) {
+        if (source.equals(target)) {
+            return "#";
+        }
+        final var sourceDir = source.isDirectory() ? source : source.getParentFile();
+        final var targetDir = target.isDirectory() ? target : target.getParentFile();
+        if (sourceDir.equals(targetDir)) {
+            return target.getName();
+        }
+        return (sourceDir.toPath().relativize(targetDir.toPath()) + "/" + target.getName()).replace("\\", "/");
+    }
 }

@@ -1,5 +1,6 @@
 package cn.powernukkitx.powerdoc.render;
 
+import cn.powernukkitx.powerdoc.Document;
 import cn.powernukkitx.powerdoc.config.Arg;
 import cn.powernukkitx.powerdoc.config.Exposed;
 import cn.powernukkitx.powerdoc.config.NullableArg;

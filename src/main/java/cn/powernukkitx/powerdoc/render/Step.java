@@ -1,5 +1,7 @@
 package cn.powernukkitx.powerdoc.render;
 
+import cn.powernukkitx.powerdoc.Document;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,5 +33,6 @@ public interface Step {
         Step.registerStep("html-format", HtmlFormatStep.class);
         Step.registerStep("markdown", MarkdownStep.class);
         Step.registerStep("catalogue", HtmlCatalogueStep.class);
+        Step.registerStep("multi-language-links", MultiLanguageLinkStep.class);
     }
 }

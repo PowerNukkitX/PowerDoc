@@ -1,5 +1,6 @@
 package cn.powernukkitx.powerdoc.config;
 
+import cn.powernukkitx.powerdoc.utils.JsonUtils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -8,7 +9,7 @@ import java.util.Map;
 
 import static cn.powernukkitx.powerdoc.utils.JsonUtils.toMap;
 
-public record BookConfig(String title, String[] author, CommonConfig.FileCollection pages, BookProcessFlow processFlow,
+public record BookConfig(String title, String[] author, Map<String, Object> defaultVariables, CommonConfig.FileCollection pages, BookProcessFlow processFlow,
                          BookWorkflow workflow) {
 
     public static BookConfig from(JsonObject jsonObject) {
@@ -23,6 +24,7 @@ public record BookConfig(String title, String[] author, CommonConfig.FileCollect
             author = new String[]{tmp.getAsString()};
         }
         return new BookConfig(jsonObject.get("title").getAsString(), author,
+                JsonUtils.toMap(jsonObject.get("defaultVariables").getAsJsonObject()),
                 CommonConfig.FileCollection.from(jsonObject.get("pages").getAsJsonObject()),
                 BookProcessFlow.from(jsonObject.get("processflow").getAsJsonObject()),
                 BookWorkflow.from(jsonObject.get("workflow").getAsJsonObject()));

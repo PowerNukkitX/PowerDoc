@@ -9,9 +9,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CopyFileProcessor implements Processor {
-    protected Map<String, String> copies;
+    protected Map<String, Object> copies;
 
-    public CopyFileProcessor(@Arg("copies") Map<String, String> copies) {
+    public CopyFileProcessor(@Arg("copies") Map<String, Object> copies) {
         this.copies = copies;
     }
 
@@ -30,8 +30,16 @@ public class CopyFileProcessor implements Processor {
         for (final var each : copies.entrySet()) {
             final var file = FileUtils.of(each.getKey());
             if (file.exists()) {
-                FileUtils.copy(file.toPath(), FileUtils.of(each.getValue()).toPath(), e -> Logger.getLogger("cn.powernukkitx.powerdoc")
-                        .log(Level.WARNING, "Cannot copy " + each.getKey() + " because: " + e.getLocalizedMessage()));
+                final var value = each.getValue();
+                if (value instanceof String str) {
+                    FileUtils.copy(file.toPath(), FileUtils.of(str).toPath(), e -> Logger.getLogger("cn.powernukkitx.powerdoc")
+                            .log(Level.WARNING, "Cannot copy " + each.getKey() + " because: " + e.getLocalizedMessage()));
+                } else if (value instanceof String[] arr) {
+                    for (final var str : arr) {
+                        FileUtils.copy(file.toPath(), FileUtils.of(str).toPath(), e -> Logger.getLogger("cn.powernukkitx.powerdoc")
+                                .log(Level.WARNING, "Cannot copy " + each.getKey() + " because: " + e.getLocalizedMessage()));
+                    }
+                }
             }
         }
     }

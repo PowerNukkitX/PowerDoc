@@ -1,10 +1,8 @@
 package cn.powernukkitx.powerdoc.utils;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.*;
 
+import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +13,35 @@ public final class JsonUtils {
             map.put(each.getKey(), toBasic(each.getValue()));
         }
         return map;
+    }
+
+    public static Object[] toArray(JsonArray jsonArray) {
+        var out = new Object[jsonArray.size()];
+        Class<?> previousClass = null;
+        Object tmp;
+        for (int i = 0, length = jsonArray.size(); i < length; i++) {
+            tmp = toBasic(jsonArray.get(i));
+            if (tmp == null) {
+                continue;
+            }
+            out[i] = tmp;
+            if (previousClass == null) {
+                previousClass = tmp.getClass();
+            } else if (!tmp.getClass().isAssignableFrom(previousClass)) {
+                if (previousClass.isAssignableFrom(tmp.getClass())) {
+                    previousClass = tmp.getClass();
+                } else {
+                    previousClass = Object.class;
+                }
+            }
+        }
+        if (previousClass != Object.class) {
+            var arr = Array.newInstance(previousClass, out.length);
+            //noinspection SuspiciousSystemArraycopy
+            System.arraycopy(out, 0, arr, 0, out.length);
+            return (Object[]) arr;
+        }
+        return out;
     }
 
     public static Object toBasic(JsonElement jsonElement) {
@@ -28,8 +55,10 @@ public final class JsonUtils {
             } else if (primitive.isNumber()) {
                 return primitive.getAsInt();
             }
-        } else if(jsonElement instanceof JsonObject object) {
+        } else if (jsonElement instanceof JsonObject object) {
             return toMap(object);
+        } else if (jsonElement instanceof JsonArray array) {
+            return toArray(array);
         }
         return jsonElement;
     }

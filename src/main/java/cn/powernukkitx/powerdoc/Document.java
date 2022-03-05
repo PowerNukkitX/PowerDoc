@@ -1,11 +1,13 @@
-package cn.powernukkitx.powerdoc.render;
+package cn.powernukkitx.powerdoc;
 
-import cn.powernukkitx.powerdoc.Book;
+import cn.powernukkitx.powerdoc.render.DocumentStepRecord;
+import cn.powernukkitx.powerdoc.utils.DataUtils;
 
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class Document implements Serializable {
     private final Path source;
@@ -43,6 +45,10 @@ public class Document implements Serializable {
         return variablesMap.get(key);
     }
 
+    public Set<Map.Entry<String, Object>> getVariables() {
+        return variablesMap.entrySet();
+    }
+
     public <T> T getVariable(String key, Class<T> clazz) {
         var obj = variablesMap.get(key);
         if (clazz.isInstance(obj)) {
@@ -61,6 +67,19 @@ public class Document implements Serializable {
 
     public void setVariable(String key, Object value) {
         variablesMap.put(key, value);
+    }
+
+    @SafeVarargs
+    public final String processVar(String str, DataUtils.Pair<String, String>... tmpVars) {
+        if (str.contains("%")) {
+            for (final var pair : tmpVars) {
+                str = str.replace("%" + pair.getA() + "%", pair.getB());
+            }
+            for (final var varEntry : this.getVariables()) {
+                str = str.replace("%" + varEntry.getKey() + "%", varEntry.getValue().toString());
+            }
+        }
+        return str;
     }
 
     public Book getBook() {
