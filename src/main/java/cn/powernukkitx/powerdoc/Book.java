@@ -75,7 +75,8 @@ public final class Book {
         if (!dir.exists() || !dir.isDirectory()) {
             return;
         }
-        var pageFiles = dir.listFiles((dir1, name) -> pageFileFilterPattern.matcher(name).matches());
+        var pageFiles = dir.listFiles((dir1, name) ->
+                !name.contains(".") || pageFileFilterPattern.matcher(name).matches());
         if (pageFiles == null || pageFiles.length == 0) {
             return;
         }
