@@ -86,7 +86,7 @@ public class HtmlCatalogueStep implements Step {
                         final var pa = ta == null ? 0 : ta.getAsInt();
                         final var tb = priority.get(b.getName());
                         final var pb = tb == null ? 0 : tb.getAsInt();
-                        return pa - pb;
+                        return pb - pa;
                     });
                 } catch (Exception ignore) {
 
