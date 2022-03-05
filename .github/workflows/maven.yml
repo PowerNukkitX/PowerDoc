@@ -24,8 +24,14 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+    - name: Get Time
+      id: time
+      uses: JantHsueh/get-time-action@master
+      with:
+        timeZone: 8
     - name: Release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/heads/master')
       with:
         files: target/PowerDoc-1.0-SNAPSHOT-shaded.jar
+        tag_name: ${{ steps.time.outputs.time }}
