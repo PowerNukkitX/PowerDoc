@@ -16,7 +16,7 @@ public final class FileUtils {
                     .map(pair -> pair.setB(destination.resolve(pair.getB())))
                     .forEach(pair -> {
                         try {
-                            Files.createDirectories(pair.getB());
+                            Files.createDirectories(pair.getB().getParent());
                             Files.copy(pair.getA(), pair.getB(), StandardCopyOption.REPLACE_EXISTING);
                         } catch (DirectoryNotEmptyException ignore) {
 
