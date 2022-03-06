@@ -158,8 +158,7 @@ public final class Book {
                 name = name.substring(0, name.lastIndexOf(".")) + "." + doc.getVariable("ext", String.class, "txt");
                 try {
                     // TODO: 2022/3/5 清理这堆屎山
-                    var file = new File(doc.getVariable("file.outputPath", String.class));
-                    file = FileUtils.of(prefix + (top ? "" : ("/" + dir.getName())) + "/" + name);
+                    var file = FileUtils.of(prefix + (top ? "" : ("/" + dir.getName())) + "/" + name);
                     final var processedPathStr = doc.processVar(file.getAbsolutePath()); // 处理路径中的变量
                     file = new File(processedPathStr);
                     //noinspection ResultOfMethodCallIgnored
