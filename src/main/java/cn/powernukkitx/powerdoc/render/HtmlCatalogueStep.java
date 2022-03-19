@@ -125,15 +125,17 @@ public class HtmlCatalogueStep implements Step {
                 }
             } else if (each.isDirectory()) {
                 if (config.pages().recursion()) {
-                    out.append(makeCatalogue(config, languageId, pageFileFilterPattern, each, workingFor, depth + 1));
+                    out.append("""
+                                    <li class="%s"><p class="%s">%s</p></li>
+                                    """.formatted(liCssClass, pCssClass, getFileTitle(each, languageId)))
+                            .append(makeCatalogue(config, languageId, pageFileFilterPattern, each, workingFor, depth + 1));
                 }
             }
         }
         return """
                 <ol class="%s">
-                <p class="%s">%s</p>
                 %s
                 </ol>
-                """.formatted(olCssClass, pCssClass, getFileTitle(dir, languageId), out.toString());
+                """.formatted(olCssClass, out.toString());
     }
 }

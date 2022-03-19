@@ -26,9 +26,13 @@ public class MultiLanguageLinkStep implements Step {
         final var multiLanguageDocuments = document.getVariable("file.multiLanguageDocuments", MultiLanguageDocuments.class);
         if (multiLanguageDocuments != null) {
             final var multiLanguageDoc = multiLanguageDocuments.fileName2DocumentMap.get(document.getSource().getFileName().toString());
-            jsonObject.addProperty(multiLanguageDoc.language(), multiLanguageDoc.path());
-            for (final var each : multiLanguageDoc.sameGroups()) {
-                jsonObject.addProperty(each.language(), each.path());
+            if (multiLanguageDoc != null) {
+                jsonObject.addProperty(multiLanguageDoc.language(), multiLanguageDoc.path());
+                for (final var each : multiLanguageDoc.sameGroups()) {
+                    jsonObject.addProperty(each.language(), each.path());
+                }
+            } else {
+                jsonObject.addProperty(document.getVariable("file.language", String.class), "./");
             }
         } else {
             jsonObject.addProperty(document.getVariable("file.language", String.class), "./");

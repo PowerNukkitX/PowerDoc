@@ -140,7 +140,9 @@ public final class Book {
                         final var languageId = multiLanguageDocuments.fileName2DocumentMap.get(each.getName()).language();
                         doc.setVariable("file.language", languageId);
                         doc.setVariable("file.title", getFileTitle(each, languageId));
-                    }
+                    } else {
+
+                    }doc.setVariable("file.title", StringUtils.beforeLast(each.getName(), "."));
                     // 设置文档输出路径
                     var name = each.getName();
                     name = name.substring(0, name.lastIndexOf(".")) + "." + doc.getVariable("ext", String.class, "txt");
