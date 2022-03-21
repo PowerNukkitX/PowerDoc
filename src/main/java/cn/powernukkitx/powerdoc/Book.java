@@ -43,6 +43,10 @@ public final class Book {
 
     private static final WeakHashMap<String, Constructor<?>> constructorCache = new WeakHashMap<>();
 
+    static {
+        Step.initInnerStep();
+    }
+
     public Book(Path bookConfigPath) throws IOException {
         var content = Files.readString(bookConfigPath);
         config = BookConfig.from(JsonParser.parseString(content).getAsJsonObject());

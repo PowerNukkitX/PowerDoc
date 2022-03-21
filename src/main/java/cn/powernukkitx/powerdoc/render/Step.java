@@ -23,9 +23,6 @@ public interface Step {
     }
 
     static Class<? extends Step> getStepClass(String id) {
-        if(registeredStep.size() == 0) {
-            initInnerStep();
-        }
         return registeredStep.get(id);
     }
 
