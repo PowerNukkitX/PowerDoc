@@ -104,7 +104,7 @@ public final class Book {
             return;
         }
         var stream = Arrays.stream(pageFiles);
-        if (pageFiles.length >= 4) {
+        if (pageFiles.length >= 2) {
             stream = stream.parallel();
         }
         stream.forEach(each -> {

@@ -31,5 +31,6 @@ public interface Step {
         Step.registerStep("markdown", MarkdownStep.class);
         Step.registerStep("catalogue", HtmlCatalogueStep.class);
         Step.registerStep("multi-language-links", MultiLanguageLinkStep.class);
+        Step.registerStep("js-doc", JSDocStep.class);
     }
 }
