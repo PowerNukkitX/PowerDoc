@@ -177,12 +177,24 @@ public class JSDocStep implements Step {
         if (typeNames == null) {
             return new String[0];
         }
-        String[] types;
-        types = new String[typeNames.size()];
-        for (int i = 0, len = typeNames.size(); i < len; i++) {
-            types[i] = typeNames.get(i).getAsString();
+        var types = new ArrayList<String>();
+        // 如果是可变参数组
+        if (Ok(returnsNode.get("variable"), JsonElement::getAsBoolean, false)) {
+            types.add("...");
         }
-        return types;
+        for (int i = 0, len = typeNames.size(); i < len; i++) {
+            var typeName = typeNames.get(i).getAsString();
+            while (typeName.startsWith("Array.")) {
+                typeName = typeName.substring(7, typeName.length() - 1);
+                if (typeName.contains("|")) {
+                    typeName = typeName.replace("|", "\\|") + "[]";
+                } else {
+                    typeName = typeName + "[]";
+                }
+            }
+            types.add(typeName);
+        }
+        return types.toArray(String[]::new);
     }
 
     record JSProgram(JSDocStep jsDocStep, List<Function> functions, List<Class> classes) {
